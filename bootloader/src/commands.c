@@ -75,13 +75,21 @@ void handle_command(char *command) {
         uart_out("abc\r\n");
     } else if (strcmp(cmd, "erase") == 0) {
         uint32_t addr = parseHex(address);
-        eraseAddress(addr);
-        uart_out("Page erased\r\n");
+        if (addr >= 0x00008000) {
+            eraseAddress(addr);
+            uart_out("Page erased\r\n");
+        } else {
+            uart_out("Fail, address within bootloader range");
+        }
     } else if (strcmp(cmd, "write") == 0) {
         uint32_t addr = parseHex(address);
         uint32_t dat = parseHex(data);
-        flashAddress(addr, dat);
-        uart_out("Word written\r\n");
+        if (addr >= 0x00008000) {
+            flashAddress(addr, dat);
+            uart_out("Word written\r\n");
+        } else {
+            uart_out("Fail, address within bootloader range");
+        }
     } else if (strcmp(cmd, "verify") == 0) {
         uart_out("Verification PASS\r\n");
     } else if (strcmp(cmd, "read") == 0) {
